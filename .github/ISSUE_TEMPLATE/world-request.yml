@@ -39,14 +39,6 @@ body:
         - Expert
         - Master
         - Journey
-  - type: dropdown
-    id: evil
-    attributes:
-      label: World evil
-      options:
-        - Random
-        - Corruption
-        - Crimson
   - type: input
     id: seed
     attributes:

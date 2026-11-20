@@ -21,7 +21,7 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       PLAYIT_SECRET: ${{ secrets.PLAYIT_SECRET }}
       SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
-      TML_VERSION: ${{ vars.TML_VERSION }}
+      VANILLA_VERSION: ${{ vars.VANILLA_VERSION }}
       # 시작 후 몇 분째에 종료/재시작할지 (하드 리밋 360분 전에 여유를 둠)
       RUN_MINUTES: "349"
       # 월드 자동 백업 주기(분)
@@ -32,15 +32,11 @@ jobs:
       - name: Record start time
         run: echo "JOB_START_S=$(date +%s)" >> "$GITHUB_ENV"
 
-      - uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: 8.0.x
-
       - uses: actions/setup-node@v4
         with:
           node-version: 20
 
-      - name: Setup (tModLoader, mods, playit, restore worlds)
+      - name: Setup (Terraria server, playit, restore worlds)
         run: bash scripts/setup.sh
 
       - name: Run server

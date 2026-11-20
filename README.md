@@ -1,4 +1,4 @@
-# GitHub Actions tModLoader 24/7 서버
+# GitHub Actions 바닐라 Terraria 24/7 서버 (1.4.5.8)
 
 ## 구조
 - `server.yml` : 서버 실행(약 5시간 49분). 종료 5분 전부터 1분마다 인게임 영어 공지 → save → 백업 → 새 실행 dispatch
@@ -10,10 +10,9 @@
 ## 설정 순서
 1. 레포를 **public**으로 만들기 (private은 무료 분 한도로 24시간 불가)
 2. Settings → Actions → General → Workflow permissions: **Read and write**
-3. https://playit.gg 에서 에이전트 생성 → 시크릿 키를 레포 시크릿 `PLAYIT_SECRET`에 등록, 대시보드에서 **TCP 터널 → 로컬 127.0.0.1:7777** 생성 (이 주소가 접속 주소, 재시작해도 고정)
-4. (선택) 시크릿 `SERVER_PASSWORD`, 변수 `TML_VERSION`(예: 클라이언트와 맞출 tModLoader 태그)
-5. `server/mods.json`의 `workshopIds`에 안티그리프/안티치트 모드와 의존 모드의 Workshop ID 입력
-6. Actions 탭에서 **Terraria Server** 를 한 번 수동 실행 (이후엔 자동 연장 + watchdog)
+3. playit.gg 에이전트 시크릿 키를 레포 시크릿 `PLAYIT_SECRET`에 등록, 같은 에이전트에 **TCP 터널 → 로컬 127.0.0.1:7777** 생성
+4. (선택) 시크릿 `SERVER_PASSWORD`(접속 비밀번호), 변수 `VANILLA_VERSION`(기본 `1458` = 1.4.5.8)
+5. Actions 탭에서 **Terraria Server** 를 한 번 수동 실행 (이후엔 자동 연장 + watchdog)
 
 ## 이슈 사용
 New issue → World request 선택 → Action 고르고 제출. 서버가 최대 30초 안에 감지해서 처리:
@@ -22,6 +21,7 @@ New issue → World request 선택 → Action 고르고 제출. 서버가 최대
 
 ## 주의
 - 접속자는 재시작 때마다 약 2~3분간 끊깁니다.
-- 클라이언트의 tModLoader 버전·모드 목록이 서버와 같아야 접속됩니다.
+- 클라이언트 버전이 서버 버전(1.4.5.8)과 같아야 접속됩니다.
+- 모드가 없는 바닐라 서버라 안티그리프 모드는 쓸 수 없습니다.
 - 24시간 게임 서버 용도는 GitHub 이용약관상 문제가 될 수 있으니 본인 책임으로 사용하세요.
 - 레포에 60일간 활동이 없으면 예약(schedule) 워크플로가 중지될 수 있습니다.

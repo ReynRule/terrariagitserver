@@ -1,6 +1,6 @@
 'use strict';
 /**
- * tModLoader 서버 감독자
+ * Terraria(바닐라) 서버 감독자
  * - 서버 실행/크래시 재시작, 마지막 활성 월드 이어서 열기
  * - 주기적 save + 백업(data 브랜치 덮어쓰기)
  * - approved 라벨이 붙은 이슈(월드 요청)를 폴링해서 처리
@@ -11,7 +11,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 
 const ROOT = process.cwd();
-const TML_DIR = path.join(ROOT, 'tml');
+const SERVER_DIR = path.join(ROOT, 'server-bin'); // setup.sh가 만든 바닐라 서버(Linux) 폴더 링크
 const SAVE_DIR = path.join(ROOT, 'tml-data');
 const WORLD_DIR = path.join(SAVE_DIR, 'Worlds');
 const DATA_DIR = path.join(ROOT, 'data');
@@ -82,8 +82,7 @@ function writeServerConfig(cfg) {
     lines.push(
       `autocreate=${SIZE[p.size] || 2}`,
       `worldname=${cfg.activeWorld}`,
-      `difficulty=${DIFF[p.difficulty] ?? 0}`,
-      `worldevil=${EVIL.includes(p.evil) ? p.evil : 'random'}`
+      `difficulty=${DIFF[p.difficulty] ?? 0}`
     );
     if (p.seed) lines.push(`seed=${p.seed}`);
     log('world file missing -> autocreate', cfg.activeWorld, JSON.stringify(p));
@@ -118,12 +117,12 @@ function startPlayit() {
 
 function startServer(cfg) {
   writeServerConfig(cfg);
-  log('starting tModLoader, world =', cfg.activeWorld);
-  const child = spawn(
-    'dotnet',
-    ['tModLoader.dll', '-server', '-config', SERVER_CFG, '-tmlsavedirectory', SAVE_DIR, '-nosteam'],
-    { cwd: TML_DIR, env: cleanEnv(), stdio: ['pipe', 'pipe', 'pipe'] }
-  );
+  log('starting Terraria server, world =', cfg.activeWorld);
+  const child = spawn('./TerrariaServer.bin.x86_64', ['-config', SERVER_CFG], {
+    cwd: SERVER_DIR,
+    env: cleanEnv(),
+    stdio: ['pipe', 'pipe', 'pipe'],
+  });
   const onData = (d) => {
     const s = d.toString();
     process.stdout.write(s);
