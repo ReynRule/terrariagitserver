@@ -1,0 +1,64 @@
+name: World request
+description: 월드 생성 / 전환 / 서버 설정 변경 (레포 기여자만)
+title: "[World] "
+labels: ["world-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        레포 기여자만 처리됩니다. **비밀번호 등 민감한 값은 적지 마세요** (이슈는 공개됩니다).
+  - type: dropdown
+    id: action
+    attributes:
+      label: Action
+      options:
+        - Create new world
+        - Switch to existing world
+        - Update server settings
+    validations:
+      required: true
+  - type: input
+    id: world_name
+    attributes:
+      label: World name
+      description: 영문/숫자/_/- 1~24자 (생성·전환 시 필수)
+  - type: dropdown
+    id: size
+    attributes:
+      label: World size
+      options:
+        - Small
+        - Medium
+        - Large
+  - type: dropdown
+    id: difficulty
+    attributes:
+      label: Difficulty
+      options:
+        - Classic
+        - Expert
+        - Master
+        - Journey
+  - type: dropdown
+    id: evil
+    attributes:
+      label: World evil
+      options:
+        - Random
+        - Corruption
+        - Crimson
+  - type: input
+    id: seed
+    attributes:
+      label: Seed
+      description: 선택 (영문/숫자/공백/_/- 32자 이내)
+  - type: input
+    id: max_players
+    attributes:
+      label: Max players
+      description: 선택 (1~255)
+  - type: input
+    id: motd
+    attributes:
+      label: MOTD
+      description: 선택 (영문/숫자/기본 문장부호 60자 이내)

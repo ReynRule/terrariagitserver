@@ -1,0 +1,38 @@
+name: World Request Gate
+
+# 이슈가 열리면 작성자가 레포 기여자인지 확인하고 approved/rejected 라벨을 붙임.
+# 실제 월드 변경은 실행 중인 서버(supervisor.js)가 approved 이슈를 읽어 처리함.
+on:
+  issues:
+    types: [opened]
+
+permissions:
+  issues: write
+
+jobs:
+  gate:
+    if: startsWith(github.event.issue.title, '[World]') || contains(github.event.issue.labels.*.name, 'world-request')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check author
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          NUM: ${{ github.event.issue.number }}
+          ASSOC: ${{ github.event.issue.author_association }}
+        run: |
+          set -euo pipefail
+          for l in world-request approved rejected done failed; do
+            gh label create "$l" --repo "$REPO" --force >/dev/null 2>&1 || true
+          done
+          case "$ASSOC" in
+            OWNER|MEMBER|COLLABORATOR|CONTRIBUTOR)
+              gh issue edit "$NUM" --repo "$REPO" --add-label world-request --add-label approved
+              gh issue comment "$NUM" --repo "$REPO" --body "✅ 요청이 접수되었습니다. 서버가 실행 중이면 약 1분 안에 처리됩니다. (서버가 꺼져 있으면 다음 기동 시 처리)"
+              ;;
+            *)
+              gh issue edit "$NUM" --repo "$REPO" --add-label world-request --add-label rejected
+              gh issue comment "$NUM" --repo "$REPO" --body "⛔ 레포 기여자만 월드 요청을 보낼 수 있습니다."
+              gh issue close "$NUM" --repo "$REPO" --reason "not planned"
+              ;;
+          esac

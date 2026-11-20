@@ -1,0 +1,52 @@
+name: Terraria Server
+
+on:
+  workflow_dispatch:
+
+# 서버는 항상 1개만 실행. 새 실행은 대기열에서 기다렸다가 이전 실행이 끝나면 시작
+concurrency:
+  group: terraria-server
+  cancel-in-progress: false
+
+permissions:
+  contents: write   # data 브랜치에 월드 백업 푸시
+  issues: write     # 이슈 처리 결과 코멘트/닫기
+  actions: write    # 다음 실행 dispatch
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 358
+    env:
+      GH_TOKEN: ${{ github.token }}
+      PLAYIT_SECRET: ${{ secrets.PLAYIT_SECRET }}
+      SERVER_PASSWORD: ${{ secrets.SERVER_PASSWORD }}
+      TML_VERSION: ${{ vars.TML_VERSION }}
+      # 시작 후 몇 분째에 종료/재시작할지 (하드 리밋 360분 전에 여유를 둠)
+      RUN_MINUTES: "349"
+      # 월드 자동 백업 주기(분)
+      AUTOBACKUP_MIN: "10"
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Record start time
+        run: echo "JOB_START_S=$(date +%s)" >> "$GITHUB_ENV"
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup (tModLoader, mods, playit, restore worlds)
+        run: bash scripts/setup.sh
+
+      - name: Run server
+        run: node server/supervisor.js
+
+      # 취소/비정상 종료 시에도 마지막으로 백업 시도
+      - name: Final backup
+        if: always()
+        run: bash scripts/backup.sh || true
