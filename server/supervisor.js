@@ -268,11 +268,19 @@ function buildChange(form, cfg) {
 }
 
 function listApprovedIssues() {
+  // gh issue list는 author_association을 못 주므로 REST API를 직접 호출 (오래된 이슈부터)
   const out = sh('gh', [
-    'issue', 'list', '--repo', REPO, '--label', 'approved', '--state', 'open',
-    '--json', 'number,body,author,authorAssociation,title', '--limit', '20',
+    'api',
+    `repos/${REPO}/issues?labels=approved&state=open&sort=created&direction=asc&per_page=20`,
   ]);
-  return JSON.parse(out).reverse(); // 오래된 것부터
+  return JSON.parse(out)
+    .filter((i) => !i.pull_request)
+    .map((i) => ({
+      number: i.number,
+      title: i.title,
+      body: i.body,
+      authorAssociation: i.author_association,
+    }));
 }
 
 function finishIssue(n, label, msg) {
