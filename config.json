@@ -1,0 +1,11 @@
+{
+  "activeWorld": "World1",
+  "maxPlayers": 16,
+  "motd": "Welcome!",
+  "pendingCreate": {
+    "size": "medium",
+    "difficulty": "classic",
+    "evil": "random",
+    "seed": ""
+  }
+}
